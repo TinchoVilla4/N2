@@ -3,107 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cronograma CLARION - Márgenes Sólidos</title>
+    <title>Cronograma CLARION - Optimizado (Fast Track)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #334155;
-            padding: 20px;
-        }
-        .gantt-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            overflow-x: auto;
-        }
-        .gantt-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 15px;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #334155; padding: 20px; }
+        .gantt-container { background: white; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 20px; overflow-x: auto; }
+        .gantt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; }
         
         svg { display: block; }
-        .grid-line { stroke: #e2e8f0; stroke-width: 1; }
+        .grid-line { stroke: #f1f5f9; stroke-width: 1; }
         .grid-line-weekend { fill: #f8fafc; }
         .row-separator { stroke: #e2e8f0; stroke-width: 1; }
-        .day-label { font-size: 10px; fill: #64748b; text-anchor: middle; }
+        .day-label { font-size: 10px; fill: #94a3b8; text-anchor: middle; }
         .month-label { font-size: 12px; font-weight: bold; fill: #334155; }
         
-        /* Barra Principal (Ejecución - Color Intenso) */
-        .task-bar { 
-            rx: 2; ry: 2; 
-            transition: all 0.3s; 
-            cursor: pointer; 
-            stroke: white;
-            stroke-width: 1;
-            filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.1));
-        }
-        .task-bar:hover { filter: brightness(1.1); }
+        /* Estilos de Tareas */
+        .task-bar { rx: 3; ry: 3; transition: opacity 0.3s; cursor: pointer; stroke: white; stroke-width: 1; }
+        .task-bar:hover { opacity: 0.9; filter: brightness(1.1); }
 
-        /* Barra de Margen (Contingencia - Color Sólido Translúcido) */
-        .task-margin {
-            rx: 2; ry: 2;
-            /* Eliminado el patrón rayado, ahora usa fill sólido */
-            fill-opacity: 0.4; 
-            stroke-width: 1.5;
-            cursor: pointer;
-            transition: fill-opacity 0.2s;
-        }
-        .task-margin:hover { fill-opacity: 0.7; } /* Se oscurece al pasar el mouse */
-
-        .critical-task { stroke: #ef4444; stroke-width: 1.5; }
-
-        .task-text {
-            font-size: 11px;
-            fill: #1e293b;
-            font-weight: 500;
-            dominant-baseline: middle;
-            text-shadow: 0px 0px 4px white;
-        }
-
-        .dependency-line {
-            stroke: #94a3b8;
-            stroke-width: 1.5;
-            fill: none;
-            marker-end: url(#arrow);
-            opacity: 0.5;
-            transition: all 0.2s;
-        }
-        .dependency-line:hover { opacity: 1; stroke: #334155; stroke-width: 2; }
+        /* Margen de Tarea individual */
+        .task-margin { rx: 3; ry: 3; fill: url(#diagonalHatch); stroke: #cbd5e1; stroke-width: 1; opacity: 0.6; }
         
-        #tooltip {
-            position: absolute;
-            background: #0f172a;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.1s;
-            z-index: 100;
-            max-width: 350px;
-            line-height: 1.4;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
+        /* Buffer del Proyecto (Ganancia por eficiencia) */
+        .project-buffer { rx: 3; ry: 3; fill: url(#successHatch); stroke: #86efac; stroke-width: 1; opacity: 0.8; }
 
-        /* Colores de Bloque */
-        .fill-b1 { fill: #3b82f6; } .stroke-b1 { stroke: #3b82f6; }
-        .fill-b2 { fill: #8b5cf6; } .stroke-b2 { stroke: #8b5cf6; }
-        .fill-b3 { fill: #10b981; } .stroke-b3 { stroke: #10b981; }
-        .fill-b4 { fill: #f59e0b; } .stroke-b4 { stroke: #f59e0b; }
-        .fill-b5 { fill: #ef4444; } .stroke-b5 { stroke: #ef4444; }
-        .fill-b6 { fill: #06b6d4; } .stroke-b6 { stroke: #06b6d4; }
-        .fill-b7 { fill: #ec4899; } .stroke-b7 { stroke: #ec4899; }
-        .fill-b8 { fill: #6366f1; } .stroke-b8 { stroke: #6366f1; }
+        .critical-task { stroke: #ef4444; stroke-width: 2; }
+        .parallel-indicator { font-size: 10px; fill: #64748b; font-style: italic; }
 
+        .task-text { font-size: 11px; fill: #1e293b; font-weight: 500; dominant-baseline: middle; }
+
+        .dependency-line { stroke: #94a3b8; stroke-width: 1.5; fill: none; marker-end: url(#arrow); opacity: 0.5; }
+        
+        #tooltip { position: absolute; background: #0f172a; color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none; opacity: 0; transition: opacity 0.1s; z-index: 100; max-width: 300px; line-height: 1.4; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        .fill-b1 { fill: #3b82f6; } .fill-b2 { fill: #8b5cf6; } .fill-b3 { fill: #10b981; }
+        .fill-b4 { fill: #f59e0b; } .fill-b5 { fill: #ef4444; } .fill-b6 { fill: #06b6d4; }
+        .fill-b7 { fill: #ec4899; } .fill-b8 { fill: #6366f1; }
     </style>
 </head>
 <body>
@@ -111,19 +47,18 @@
 <div class="max-w-full mx-auto">
     <div class="gantt-header">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800">Cronograma MCR - CLARION</h1>
+            <h1 class="text-2xl font-bold text-slate-800">Cronograma Optimizado (Fast-Track)</h1>
             <p class="text-sm text-slate-500 mt-1">
-                Hitos alineados con Documentación "CLARION_2 (4)" | <strong>01 Nov - 03 Dic 2025</strong>
+                Estrategia de Paralelismo | Inicio: <strong>01 Nov</strong> — Entrega: <strong>03 Dic</strong>
             </p>
         </div>
-        <div class="text-right flex items-center gap-4 text-xs text-slate-600">
-             <div class="flex items-center gap-1">
-                <div class="w-4 h-4 bg-blue-500 rounded"></div>
-                <span>Trabajo (80%)</span>
+        <div class="text-right flex flex-col items-end gap-1 text-xs text-slate-600">
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 bg-blue-500 rounded"></div> <span>Tarea (80% Tiempo)</span>
+                <div class="w-3 h-3 border border-slate-400 rounded" style="background: repeating-linear-gradient(45deg, #e2e8f0, #e2e8f0 2px, #fff 2px, #fff 4px);"></div> <span>Margen Tarea (20%)</span>
             </div>
-            <div class="flex items-center gap-1">
-                <div class="w-4 h-4 bg-blue-500 rounded opacity-40 border border-blue-500"></div>
-                <span>Margen (20% Sólido)</span>
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 border border-green-400 rounded" style="background: repeating-linear-gradient(45deg, #dcfce7, #dcfce7 2px, #fff 2px, #fff 4px);"></div> <span class="font-bold text-green-700">Buffer de Proyecto (Ganado)</span>
             </div>
         </div>
     </div>
@@ -134,228 +69,235 @@
 <div id="tooltip"></div>
 
 <script>
-    // --- CONFIGURACIÓN ---
-    const START_DATE = new Date(2025, 10, 1); // 1 Nov 2025
+    const START_DATE = new Date(2025, 10, 1); // 1 Nov
+    const DEADLINE_DATE = new Date(2025, 11, 3); // 3 Dic
     
     function getDateFromDayOffset(offset) {
         const date = new Date(START_DATE);
         date.setDate(date.getDate() + offset);
         return date;
     }
+    function formatDate(date) { return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }); }
 
-    function formatDate(date) {
-        return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-    }
-
-    // --- TAREAS (Mismos nombres que en CLARION_2 (4)) ---
+    // --- TAREAS OPTIMIZADAS (PARALELISMO) ---
+    // Se han ajustado las dependencias (dep) para permitir ejecución simultánea
     const tasks = [
-        { id: "2.1", name: "Definición de Necesidad y Justificación (Sec 2.1)", duration: 2, block: 1, dep: [] },
-        { id: "2.2", name: "Marco de Actores y Contexto (Sec 2.2)", duration: 1, block: 1, dep: ["2.1"] },
-        { id: "2.3-6", name: "Metas, Objetivos y Misión (Sec 2.3-2.6)", duration: 2, block: 1, dep: ["2.2"] },
-        { id: "2.7-8", name: "Restricciones y Autoridades (Sec 2.7-2.8)", duration: 1, block: 1, dep: ["2.3-6"] },
+        // B1: Definición (Paralelo)
+        { id: "2.1", name: "Definición de Necesidad (Sec 2.1)", duration: 2, block: 1, dep: [] },
+        { id: "2.2", name: "Marco de Actores (Sec 2.2)", duration: 2, block: 1, dep: ["2.1"] }, 
+        { id: "2.3-6", name: "Metas, Objetivos y Misión (Sec 2.3-2.6)", duration: 2, block: 1, dep: ["2.1"] }, // Paralelo a 2.2
 
-        { id: "2.9A", name: "Sec 2.9: Definición de Fases (Lanzamiento/Ops)", duration: 2, block: 2, dep: ["2.7-8"] },
-        { id: "2.9B", name: "Sec 2.9: Diseño Gráfico del ConOps (Fig 1)", duration: 2, block: 2, dep: ["2.9A"] },
+        // B2: Ops
+        { id: "2.7-8", name: "Restricciones y Autoridades", duration: 2, block: 2, dep: ["2.2", "2.3-6"] },
+        { id: "2.9", name: "Concepto de Operaciones (ConOps)", duration: 3, block: 2, dep: ["2.7-8"] },
 
-        { id: "3.1", name: "Diagrama N2 e Interfaces (Sec 3.1)", duration: 2, block: 3, dep: ["2.9B"] },
-        { id: "3.2", name: "Bloques Funcionales (Sec 3.2)", duration: 2, block: 3, dep: ["3.1"] },
-        { id: "3.3", name: "Diagrama de Subsistemas (Sec 3.3)", duration: 2, block: 3, dep: ["3.2"] },
+        // B3: Arquitectura (Paralelo)
+        { id: "3.1", name: "Matriz N2 e Interfaces (Sec 3.1)", duration: 2, block: 3, dep: ["2.9"] },
+        { id: "3.2", name: "Bloques Funcionales (Sec 3.2)", duration: 2, block: 3, dep: ["2.9"] }, // Paralelo a 3.1
+        { id: "3.3", name: "Diagrama de Subsistemas (Sec 3.3)", duration: 2, block: 3, dep: ["3.1", "3.2"] },
 
-        { id: "4.1", name: "Sec 4: Análisis Pre-lanzamiento y Ascenso", duration: 2, block: 4, dep: ["3.3"] },
-        { id: "4.2", name: "Sec 4: Análisis Orbital y Post-lanzamiento (AAS, AO)", duration: 2, block: 4, dep: ["4.1"] },
+        // B4 & B5: Análisis Simultáneo (Gran ganancia de tiempo)
+        { id: "4.0", name: "Análisis de Ambiente (Sec 4)", duration: 3, block: 4, dep: ["3.3"] },
+        { id: "5.0", name: "Requerimientos (Sec 5)", duration: 4, block: 5, dep: ["3.3"] }, // Paralelo a 4.0
 
-        { id: "5.0", name: "Sec 5: Definición de Requerimientos (ID 1-8)", duration: 4, block: 5, dep: ["4.2"] },
+        // B6: Planificación Simultánea
+        { id: "6.1-2", name: "WBS y Cronograma", duration: 2, block: 6, dep: ["5.0"] },
+        { id: "6.3-5", name: "Matriz y Análisis de Riesgos", duration: 3, block: 6, dep: ["5.0", "4.0"] }, // Paralelo a 6.1-2
 
-        { id: "6.1", name: "Sec 6.1-6.2: WBS y Cronograma", duration: 2, block: 6, dep: ["5.0"] },
-        { id: "6.3", name: "Sec 6.3-6.5: Matriz y Análisis de Riesgos", duration: 2, block: 6, dep: ["6.1"] },
-
-        { id: "7.0", name: "Redacción de Conclusiones y Bibliografía", duration: 1, block: 7, dep: ["6.3"] },
-        { id: "DOC", name: "Compilación LaTeX y Ajuste de Formato", duration: 3, block: 7, dep: ["7.0"] },
-
-        { id: "REV", name: "Revisión Interna de Entregable", duration: 1, block: 8, dep: ["DOC"] },
-        { id: "MCR", name: "ENTREGA FINAL Y REVISIÓN MCR", duration: 1, block: 8, dep: ["REV"] }
+        // B7: Cierre
+        { id: "7-8", name: "Conclusiones y Bibliografía", duration: 1, block: 7, dep: ["6.1-2", "6.3-5"] },
+        { id: "REV", name: "Revisión y Formato Final", duration: 3, block: 7, dep: ["7-8"] },
+        
+        // Hito Final (Se alinea a la fecha real de finalización técnica)
+        { id: "MCR", name: "ENTREGA FINAL (HITO)", duration: 0, block: 8, dep: ["REV"] } 
     ];
 
-    // --- CÁLCULO (CPM) ---
+    // --- CPM CALCULATION ---
     const calculateSchedule = (tasks) => {
-        const forwardPass = {}; 
-        const taskMap = {};
-        tasks.forEach((task, index) => taskMap[task.id] = { ...task, index });
-
-        const getES = (taskId) => {
-            const task = taskMap[taskId];
-            if (!task) return 0;
-            if (forwardPass[taskId]) return forwardPass[taskId].ES;
-
+        const map = {}; tasks.forEach(t => map[t.id] = t);
+        const forward = {};
+        
+        const getES = (id) => {
+            if(forward[id]) return forward[id].ES;
+            const t = map[id];
             let maxEF = 0;
-            if (task.dep && task.dep.length > 0) {
-                task.dep.forEach(depId => {
-                    const depEF = getES(depId) + taskMap[depId].duration;
-                    if (depEF > maxEF) maxEF = depEF;
+            if(t.dep.length > 0) {
+                t.dep.forEach(dId => {
+                    const dEF = getES(dId) + map[dId].duration;
+                    if(dEF > maxEF) maxEF = dEF;
                 });
             }
-            forwardPass[taskId] = { ES: maxEF, EF: maxEF + task.duration };
+            forward[id] = { ES: maxEF, EF: maxEF + t.duration };
             return maxEF;
         };
-        
-        tasks.forEach(task => getES(task.id));
+        tasks.forEach(t => getES(t.id));
 
-        let PD = 0;
-        Object.values(forwardPass).forEach(s => { if(s.EF > PD) PD = s.EF; });
+        let PD = 0; // Project Duration (Técnica)
+        Object.values(forward).forEach(f => { if(f.EF > PD) PD = f.EF; });
+
+        // Calculate Buffer
+        // Fecha fin técnica vs Fecha fin real (3 Dic)
+        // 1 Nov a 3 Dic son 33 días (aprox). 
+        const deadlineDayOffset = 32; // 0-indexed, día 32 es el 3 de Dic.
         
         const schedule = {};
-        tasks.forEach(task => {
-            schedule[task.id] = { ...forwardPass[task.id], LS: 0, LF: PD, S: 0, isCritical: false };
+        tasks.forEach(t => {
+            const f = forward[t.id];
+            // Slack calculado contra la duración técnica del proyecto, no el deadline duro aun
+            // para mostrar ruta crítica técnica.
+            schedule[t.id] = { ...f, LS: 0, LF: 0, S: 0, isCritical: false };
         });
 
-        for (let i = tasks.length - 1; i >= 0; i--) {
-            const taskId = tasks[i].id;
-            const task = taskMap[taskId];
-            const sched = schedule[taskId];
-            
-            const successors = tasks.filter(t => t.dep.includes(taskId));
+        // Backward pass using Technical PD
+        for(let i=tasks.length-1; i>=0; i--){
+            const t = tasks[i];
+            const s = schedule[t.id];
+            const succ = tasks.filter(x => x.dep.includes(t.id));
             let minLS = PD;
-
-            if (successors.length > 0) {
-                successors.forEach(succ => {
-                    if (schedule[succ.id].LS < minLS) minLS = schedule[succ.id].LS;
-                });
-                sched.LF = minLS;
-            } else {
-                sched.LF = PD;
-            }
-            
-            sched.LS = sched.LF - task.duration;
-            sched.S = parseFloat((sched.LF - sched.EF).toFixed(2));
-            sched.isCritical = sched.S === 0;
-        }
-        return { schedule, PD };
-    };
-
-    const { schedule, PD } = calculateSchedule(tasks);
-    const maxDays = Math.ceil(PD) + 2;
-
-    // --- RENDERIZADO ---
-    const dayWidth = 35; 
-    const rowHeight = 38;
-    const headerHeight = 60;
-    const leftPadding = 300;
-    const svgWidth = leftPadding + (maxDays * dayWidth);
-    const svgHeight = headerHeight + (tasks.length * rowHeight) + 30;
-
-    let svgHTML = `<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">`;
-    
-    svgHTML += `
-    <defs>
-        <marker id="arrow" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L6,3 L0,6" fill="#94a3b8" /> 
-        </marker>
-    </defs>
-    <rect width="100%" height="100%" fill="white" />`;
-    
-    let currentMonth = -1;
-    for (let d = 0; d < maxDays; d++) {
-        const currentDate = getDateFromDayOffset(d);
-        const x = leftPadding + (d * dayWidth);
-        const isWeekend = (currentDate.getDay() === 0 || currentDate.getDay() === 6);
-
-        if (isWeekend) {
-             svgHTML += `<rect x="${x}" y="${headerHeight}" width="${dayWidth}" height="${svgHeight}" class="grid-line-weekend" />`;
+            if(succ.length > 0) succ.forEach(sc => { if(schedule[sc.id].LS < minLS) minLS = schedule[sc.id].LS; });
+            s.LF = minLS;
+            s.LS = s.LF - t.duration;
+            s.S = s.LF - s.EF;
+            s.isCritical = s.S === 0;
         }
         
-        svgHTML += `<line x1="${x}" y1="${headerHeight}" x2="${x}" y2="${svgHeight}" class="grid-line" />`;
-        svgHTML += `<text x="${x + (dayWidth/2)}" y="${headerHeight - 10}" class="day-label">${currentDate.getDate()}</text>`;
+        return { schedule, PD, deadlineDayOffset };
+    };
 
-        if (currentDate.getMonth() !== currentMonth) {
-            const monthName = currentDate.toLocaleString('es-ES', { month: 'long' }).toUpperCase();
-            svgHTML += `<text x="${x + 5}" y="${20}" class="month-label">${monthName}</text>`;
-            svgHTML += `<line x1="${x}" y1="0" x2="${x}" y2="${headerHeight}" stroke="#cbd5e1" stroke-width="2" />`;
-            currentMonth = currentDate.getMonth();
+    const { schedule, PD, deadlineDayOffset } = calculateSchedule(tasks);
+    // Max days para el SVG es hasta el deadline (para mostrar el buffer)
+    const maxDays = Math.max(PD, deadlineDayOffset) + 2;
+
+    // --- RENDER ---
+    const dayWidth = 30; 
+    const rowHeight = 36;
+    const headerHeight = 50;
+    const leftPadding = 280;
+    const svgWidth = leftPadding + (maxDays * dayWidth);
+    const svgHeight = headerHeight + (tasks.length * rowHeight) + 60; // Extra space for buffer visualization
+
+    let svg = `<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <marker id="arrow" markerWidth="5" markerHeight="5" refX="5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5" fill="#94a3b8" /></marker>
+            <pattern id="diagonalHatch" width="4" height="4" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" style="stroke:#cbd5e1; stroke-width:1" /></pattern>
+            <pattern id="successHatch" width="4" height="4" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" style="stroke:#86efac; stroke-width:1" /></pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="white" />`;
+
+    // Grid
+    let currMonth = -1;
+    for(let d=0; d<maxDays; d++){
+        const date = getDateFromDayOffset(d);
+        const x = leftPadding + (d*dayWidth);
+        const isWE = (date.getDay()===0 || date.getDay()===6);
+        if(isWE) svg += `<rect x="${x}" y="${headerHeight}" width="${dayWidth}" height="${svgHeight}" class="grid-line-weekend" />`;
+        svg += `<line x1="${x}" y1="${headerHeight}" x2="${x}" y2="${svgHeight}" class="grid-line" />`;
+        
+        // Deadline Line
+        if(d === deadlineDayOffset) {
+             svg += `<line x1="${x}" y1="${0}" x2="${x}" y2="${svgHeight}" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,5" />`;
+             svg += `<text x="${x+5}" y="${headerHeight-25}" fill="#ef4444" font-size="10" font-weight="bold">DEADLINE</text>`;
+        }
+
+        if(d % 2 === 0) svg += `<text x="${x + dayWidth/2}" y="${headerHeight-5}" class="day-label">${date.getDate()}</text>`;
+        
+        if(date.getMonth() !== currMonth){
+            svg += `<text x="${x+5}" y="20" class="month-label">${date.toLocaleString('es-ES',{month:'long'}).toUpperCase()}</text>`;
+            svg += `<line x1="${x}" y1="0" x2="${x}" y2="${headerHeight}" stroke="#cbd5e1" stroke-width="1" />`;
+            currMonth = date.getMonth();
         }
     }
 
-    let currentY = headerHeight;
-    let taskBarsHTML = "";
-    let textHTML = "";
-    let linesHTML = "";
-    let blockHTML = "";
-    let currentBlock = 0;
+    let y = headerHeight;
+    let connHTML = "";
+    let barHTML = "";
+    let txtHTML = "";
+    let blkHTML = "";
+    let currBlk = 0;
 
-    tasks.forEach((task, index) => {
-        const s = schedule[task.id];
-        const xBase = leftPadding + (s.ES * dayWidth);
+    tasks.forEach((t, i) => {
+        const s = schedule[t.id];
+        const x = leftPadding + (s.ES * dayWidth);
         
-        // Lógica 80/20
-        const totalWidth = task.duration * dayWidth;
-        const workWidth = totalWidth * 0.8;
-        const marginWidth = totalWidth * 0.2;
+        // 80/20 Split
+        const fullW = t.duration * dayWidth;
+        const workW = fullW * 0.8;
+        const margW = fullW * 0.2;
         
-        const workDays = (task.duration * 0.8).toFixed(1);
-        const marginDays = (task.duration * 0.2).toFixed(1);
+        svg += `<line x1="0" y1="${y}" x2="${svgWidth}" y2="${y}" class="row-separator" />`;
 
-        if (task.block !== currentBlock) {
-            const blockHeight = tasks.filter(t=>t.block===task.block).length * rowHeight;
-            blockHTML += `<rect x="0" y="${currentY}" width="5" height="${blockHeight}" class="fill-b${task.block}" />`;
-            currentBlock = task.block;
+        // Block Color
+        if(t.block !== currBlk){
+            const h = tasks.filter(x=>x.block===t.block).length * rowHeight;
+            blkHTML += `<rect x="0" y="${y}" width="5" height="${h}" class="fill-b${t.block}" />`;
+            currBlk = t.block;
+        }
+        
+        // Text
+        const isParallel = (t.id === "2.3-6" || t.id === "3.2" || t.id === "5.0" || t.id === "6.3-5");
+        const label = isParallel ? `${t.name} (Simultáneo)` : t.name;
+        txtHTML += `<text x="15" y="${y + rowHeight/2}" class="task-text" style="${isParallel?'fill:#475569':''}">${label}</text>`;
+
+        if(t.duration > 0) {
+            // Work Bar
+            const d1 = (t.duration*0.8).toFixed(1);
+            const d2 = (t.duration*0.2).toFixed(1);
+            const tip1 = `<strong>${t.name}</strong><br>Ejecución: ${d1} días<br>Inicio: ${formatDate(getDateFromDayOffset(s.ES))}`;
+            
+            barHTML += `<rect x="${x}" y="${y+8}" width="${workW}" height="${rowHeight-16}" class="task-bar fill-b${t.block} ${s.isCritical?'critical-task':''}" onmouseover="showTooltip(evt, '${tip1}')" onmouseout="hideTooltip()" />`;
+            
+            // Margin Bar
+            barHTML += `<rect x="${x+workW}" y="${y+8}" width="${margW}" height="${rowHeight-16}" class="task-margin" onmouseover="showTooltip(evt, 'Margen Tarea: ${d2} días')" onmouseout="hideTooltip()" />`;
+        } else {
+            // Milestone Diamond
+             barHTML += `<path d="M${x},${y+8} L${x+10},${y+18} L${x},${y+28} L${x-10},${y+18} Z" fill="#ef4444" />`;
         }
 
-        svgHTML += `<line x1="0" y1="${currentY}" x2="${svgWidth}" y2="${currentY}" class="row-separator" />`;
-        
-        textHTML += `<text x="15" y="${currentY + (rowHeight/2)}" class="task-text" style="font-weight: ${task.id === 'MCR' ? 'bold' : 'normal'}">${task.name}</text>`;
-
-        const startDate = getDateFromDayOffset(s.ES);
-        const endDate = getDateFromDayOffset(s.EF);
-        const tipWork = `<strong>${task.name}</strong><br>Trabajo Neto: ${workDays} días<br>Inicio: ${formatDate(startDate)}`;
-        const tipMargin = `<strong>Margen de Riesgo</strong><br>Reserva: ${marginDays} días<br>Entrega Límite: ${formatDate(endDate)}`;
-
-        // 1. Barra de Trabajo (Sólida)
-        taskBarsHTML += `<rect x="${xBase}" y="${currentY + 10}" width="${workWidth}" height="${rowHeight - 20}" 
-            class="task-bar fill-b${task.block} ${s.isCritical ? 'critical-task' : ''}" 
-            onmouseover="showTooltip(evt, '${tipWork}')" onmouseout="hideTooltip()" />`;
-
-        // 2. Barra de Margen (Sólida translúcida del mismo color)
-        // Se aplica la clase 'fill-bX' para el color base y 'task-margin' para la opacidad
-        taskBarsHTML += `<rect x="${xBase + workWidth}" y="${currentY + 10}" width="${marginWidth}" height="${rowHeight - 20}" 
-            class="task-margin fill-b${task.block} stroke-b${task.block}" 
-            onmouseover="showTooltip(evt, '${tipMargin}')" onmouseout="hideTooltip()" />`;
-
-        task.dep.forEach(depId => {
-            const depIndex = tasks.findIndex(t => t.id === depId);
-            if (depIndex !== -1) {
-                const depS = schedule[depId];
-                const startX = leftPadding + (depS.EF * dayWidth); 
-                const startY = currentY - (index - depIndex) * rowHeight + (rowHeight/2);
-                const endX = xBase; 
-                const endY = currentY + (rowHeight/2);
+        // Dependencies
+        t.dep.forEach(dp => {
+            const pix = tasks.findIndex(x=>x.id===dp);
+            if(pix >= 0){
+                const ps = schedule[dp];
+                const x1 = leftPadding + (ps.EF * dayWidth);
+                const y1 = headerHeight + (pix * rowHeight) + rowHeight/2;
+                const x2 = x;
+                const y2 = y + rowHeight/2;
                 
-                let path = "";
-                if (endX > startX + 10) {
-                     path = `M ${startX} ${startY} L ${endX - 5} ${startY} L ${endX - 5} ${endY} L ${endX} ${endY}`;
-                } else {
-                     path = `M ${startX} ${startY} L ${startX + 5} ${startY} L ${startX + 5} ${endY - 5} L ${endX - 5} ${endY - 5} L ${endX - 5} ${endY} L ${endX} ${endY}`;
-                }
-                linesHTML += `<path d="${path}" class="dependency-line" />`;
+                let p = "";
+                if(x2 > x1 + 10) p = `M${x1},${y1} L${x2-5},${y1} L${x2-5},${y2} L${x2},${y2}`;
+                else p = `M${x1},${y1} L${x1+5},${y1} L${x1+5},${y2-5} L${x2-5},${y2-5} L${x2-5},${y2} L${x2},${y2}`;
+                
+                connHTML += `<path d="${p}" class="dependency-line" />`;
             }
         });
 
-        currentY += rowHeight;
+        y += rowHeight;
     });
 
-    svgHTML += `<line x1="0" y1="${currentY}" x2="${svgWidth}" y2="${currentY}" class="row-separator" />`;
+    // --- PROJECT BUFFER VISUALIZATION ---
+    // Mostrar la holgura ganada al final
+    const techFinishX = leftPadding + (PD * dayWidth);
+    const deadFinishX = leftPadding + (deadlineDayOffset * dayWidth);
+    const bufferWidth = deadFinishX - techFinishX;
     
-    svgHTML += blockHTML + linesHTML + taskBarsHTML + textHTML + `</svg>`;
-    document.getElementById('chart-container').innerHTML = svgHTML;
+    if(bufferWidth > 0) {
+        // Dibujar una barra de "Buffer" en la última fila (Hito MCR) o una nueva fila
+        const bufferY = y - rowHeight + 8; // Al nivel del hito
+        //barHTML += `<rect x="${techFinishX}" y="${bufferY}" width="${bufferWidth}" height="${rowHeight-16}" class="project-buffer" onmouseover="showTooltip(evt, '<strong>Buffer de Proyecto</strong><br>Ganado por eficiencia.<br>Seguridad extra antes del MCR.')" onmouseout="hideTooltip()" />`;
+        
+        // O mejor, una zona sombreada vertical al final que muestre el tiempo ganado
+        // svg += `<rect x="${techFinishX}" y="${headerHeight}" width="${bufferWidth}" height="${svgHeight - headerHeight}" fill="#dcfce7" opacity="0.3" />`;
+        // svg += `<text x="${techFinishX + 10}" y="${svgHeight - 10}" font-size="11" fill="#15803d" font-weight="bold">Buffer de Seguridad (${(bufferWidth/dayWidth).toFixed(0)} días)</text>`;
+    }
 
-    const tooltip = document.getElementById('tooltip');
-    window.showTooltip = (evt, text) => {
-        tooltip.innerHTML = text;
-        tooltip.style.opacity = 1;
-        let left = evt.pageX + 15;
-        if (left + 300 > window.innerWidth) left = evt.pageX - 310;
-        tooltip.style.left = left + 'px';
-        tooltip.style.top = (evt.pageY + 10) + 'px';
-    };
-    window.hideTooltip = () => { tooltip.style.opacity = 0; };
+    svg += blkHTML + connHTML + barHTML + txtHTML + `</svg>`;
+    document.getElementById('chart-container').innerHTML = svg;
+
+    // Tooltip
+    const tt = document.getElementById('tooltip');
+    window.showTooltip = (e,t) => { tt.innerHTML=t; tt.style.opacity=1; tt.style.left=(e.pageX+15)+'px'; tt.style.top=(e.pageY+10)+'px'; }
+    window.hideTooltip = () => { tt.style.opacity=0; }
+
 </script>
 </body>
 </html>
