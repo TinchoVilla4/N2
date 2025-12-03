@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cronograma CLARION - Con Margen de Seguridad</title>
+    <title>Cronograma CLARION - Márgenes Sólidos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -36,26 +36,27 @@
         .day-label { font-size: 10px; fill: #64748b; text-anchor: middle; }
         .month-label { font-size: 12px; font-weight: bold; fill: #334155; }
         
-        /* Barra Principal (Ejecución) */
+        /* Barra Principal (Ejecución - Color Intenso) */
         .task-bar { 
             rx: 2; ry: 2; 
-            transition: opacity 0.3s; 
+            transition: all 0.3s; 
             cursor: pointer; 
             stroke: white;
             stroke-width: 1;
+            filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.1));
         }
-        .task-bar:hover { opacity: 0.9; }
+        .task-bar:hover { filter: brightness(1.1); }
 
-        /* Barra de Margen (Contingencia) */
+        /* Barra de Margen (Contingencia - Color Sólido Translúcido) */
         .task-margin {
             rx: 2; ry: 2;
-            fill: url(#diagonalHatch); /* Patrón rayado */
-            stroke: #cbd5e1;
-            stroke-width: 1;
-            opacity: 0.8;
+            /* Eliminado el patrón rayado, ahora usa fill sólido */
+            fill-opacity: 0.4; 
+            stroke-width: 1.5;
             cursor: pointer;
+            transition: fill-opacity 0.2s;
         }
-        .task-margin:hover { opacity: 1; stroke: #94a3b8; }
+        .task-margin:hover { fill-opacity: 0.7; } /* Se oscurece al pasar el mouse */
 
         .critical-task { stroke: #ef4444; stroke-width: 1.5; }
 
@@ -88,7 +89,7 @@
             opacity: 0;
             transition: opacity 0.1s;
             z-index: 100;
-            max-width: 280px;
+            max-width: 350px;
             line-height: 1.4;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
@@ -110,20 +111,19 @@
 <div class="max-w-full mx-auto">
     <div class="gantt-header">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800">Cronograma CLARION - Gestión de Riesgo</h1>
+            <h1 class="text-2xl font-bold text-slate-800">Cronograma MCR - CLARION</h1>
             <p class="text-sm text-slate-500 mt-1">
-                Inicio: <strong>01 Nov 2025</strong> &mdash; MCR: <strong>03 Dic 2025</strong>
-                <span class="ml-2 px-2 py-0.5 bg-amber-100 text-amber-800 rounded text-xs font-medium">Plazos Ajustados</span>
+                Hitos alineados con Documentación "CLARION_2 (4)" | <strong>01 Nov - 03 Dic 2025</strong>
             </p>
         </div>
         <div class="text-right flex items-center gap-4 text-xs text-slate-600">
              <div class="flex items-center gap-1">
-                <div class="w-3 h-3 bg-blue-500 rounded"></div>
-                <span>Ejecución (80%)</span>
+                <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                <span>Trabajo (80%)</span>
             </div>
             <div class="flex items-center gap-1">
-                <div class="w-3 h-3 border border-slate-400 rounded" style="background: repeating-linear-gradient(45deg, #e2e8f0, #e2e8f0 2px, #fff 2px, #fff 4px);"></div>
-                <span>Margen 25% (20% del total)</span>
+                <div class="w-4 h-4 bg-blue-500 rounded opacity-40 border border-blue-500"></div>
+                <span>Margen (20% Sólido)</span>
             </div>
         </div>
     </div>
@@ -147,43 +147,33 @@
         return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
     }
 
-    // --- TAREAS (Estructura Original del Gantt provisto) ---
-    // NOTA: Las duraciones aquí son los "slots" totales disponibles en el calendario.
-    // El código las dividirá en Ejecución y Margen.
+    // --- TAREAS (Mismos nombres que en CLARION_2 (4)) ---
     const tasks = [
-        { id: "1.1", name: "Kick-off + alineación", duration: 1, block: 1, dep: [] },
-        { id: "1.2", name: "Definir problema y objetivos", duration: 2, block: 1, dep: ["1.1"] },
-        { id: "1.3", name: "Definir alcance preliminar", duration: 1, block: 1, dep: ["1.2"] },
-        { id: "1.4", name: "Identificar restricciones", duration: 1, block: 1, dep: ["1.2"] },
-        
-        { id: "2.1", name: "Definir escenarios operativos", duration: 2, block: 2, dep: ["1.3", "1.4"] },
-        { id: "2.2", name: "Definir modos de misión", duration: 1, block: 2, dep: ["2.1"] },
-        { id: "2.3", name: "Definir segmentos", duration: 1, block: 2, dep: ["2.1"] },
-        { id: "2.4", name: "Diagrama secuencia ops", duration: 1, block: 2, dep: ["2.2", "2.3"] },
+        { id: "2.1", name: "Definición de Necesidad y Justificación (Sec 2.1)", duration: 2, block: 1, dep: [] },
+        { id: "2.2", name: "Marco de Actores y Contexto (Sec 2.2)", duration: 1, block: 1, dep: ["2.1"] },
+        { id: "2.3-6", name: "Metas, Objetivos y Misión (Sec 2.3-2.6)", duration: 2, block: 1, dep: ["2.2"] },
+        { id: "2.7-8", name: "Restricciones y Autoridades (Sec 2.7-2.8)", duration: 1, block: 1, dep: ["2.3-6"] },
 
-        { id: "3.1", name: "Alternativas plataforma", duration: 2, block: 3, dep: ["2.4"] },
-        { id: "3.2", name: "Alternativas payload", duration: 2, block: 3, dep: ["2.4"] },
-        { id: "3.3", name: "Alternativas órbita", duration: 2, block: 3, dep: ["2.4"] },
+        { id: "2.9A", name: "Sec 2.9: Definición de Fases (Lanzamiento/Ops)", duration: 2, block: 2, dep: ["2.7-8"] },
+        { id: "2.9B", name: "Sec 2.9: Diseño Gráfico del ConOps (Fig 1)", duration: 2, block: 2, dep: ["2.9A"] },
 
-        { id: "4.1", name: "Análisis desempeño orbital", duration: 2, block: 4, dep: ["3.3"] },
-        { id: "4.2", name: "Análisis comunicaciones", duration: 2, block: 4, dep: ["3.1", "4.1"] },
-        { id: "4.3", name: "Est. consumo potencia", duration: 2, block: 4, dep: ["3.1", "3.2"] },
-        { id: "4.4", name: "Viabilidad vigilancia ISS", duration: 1, block: 4, dep: ["4.1", "4.2", "4.3"] },
+        { id: "3.1", name: "Diagrama N2 e Interfaces (Sec 3.1)", duration: 2, block: 3, dep: ["2.9B"] },
+        { id: "3.2", name: "Bloques Funcionales (Sec 3.2)", duration: 2, block: 3, dep: ["3.1"] },
+        { id: "3.3", name: "Diagrama de Subsistemas (Sec 3.3)", duration: 2, block: 3, dep: ["3.2"] },
 
-        { id: "5.1", name: "WBS Nivel 1-2 + dicc.", duration: 2, block: 5, dep: ["3.1", "3.2"] },
-        { id: "5.2", name: "Estimación ROM Costos", duration: 1, block: 5, dep: ["5.1"] },
-        { id: "5.3", name: "Estimación ROM Crono", duration: 1, block: 5, dep: ["5.1"] },
-        { id: "5.4", name: "Identificación riesgos", duration: 2, block: 5, dep: ["4.4", "5.1"] },
+        { id: "4.1", name: "Sec 4: Análisis Pre-lanzamiento y Ascenso", duration: 2, block: 4, dep: ["3.3"] },
+        { id: "4.2", name: "Sec 4: Análisis Orbital y Post-lanzamiento (AAS, AO)", duration: 2, block: 4, dep: ["4.1"] },
 
-        { id: "6.1", name: "Matriz de decisión", duration: 2, block: 6, dep: ["4.4", "5.2", "5.3", "5.4"] },
-        { id: "6.2", name: "Selección Baseline", duration: 1, block: 6, dep: ["6.1"] },
+        { id: "5.0", name: "Sec 5: Definición de Requerimientos (ID 1-8)", duration: 4, block: 5, dep: ["4.2"] },
 
-        { id: "7.1", name: "Preparar doc. MCR", duration: 4, block: 7, dep: ["6.2"] },
-        { id: "7.2", name: "Ensayar presentación", duration: 1, block: 7, dep: ["7.1"] },
-        { id: "7.3", name: "Correcciones finales", duration: 1, block: 7, dep: ["7.2"] },
+        { id: "6.1", name: "Sec 6.1-6.2: WBS y Cronograma", duration: 2, block: 6, dep: ["5.0"] },
+        { id: "6.3", name: "Sec 6.3-6.5: Matriz y Análisis de Riesgos", duration: 2, block: 6, dep: ["6.1"] },
 
-        { id: "8.1", name: "Envío Previo", duration: 1, block: 8, dep: ["7.3"] },
-        { id: "8.2", name: "REVISIÓN MCR (HITO)", duration: 1, block: 8, dep: ["8.1"] }
+        { id: "7.0", name: "Redacción de Conclusiones y Bibliografía", duration: 1, block: 7, dep: ["6.3"] },
+        { id: "DOC", name: "Compilación LaTeX y Ajuste de Formato", duration: 3, block: 7, dep: ["7.0"] },
+
+        { id: "REV", name: "Revisión Interna de Entregable", duration: 1, block: 8, dep: ["DOC"] },
+        { id: "MCR", name: "ENTREGA FINAL Y REVISIÓN MCR", duration: 1, block: 8, dep: ["REV"] }
     ];
 
     // --- CÁLCULO (CPM) ---
@@ -207,6 +197,7 @@
             forwardPass[taskId] = { ES: maxEF, EF: maxEF + task.duration };
             return maxEF;
         };
+        
         tasks.forEach(task => getES(task.id));
 
         let PD = 0;
@@ -248,25 +239,20 @@
     const dayWidth = 35; 
     const rowHeight = 38;
     const headerHeight = 60;
-    const leftPadding = 240;
+    const leftPadding = 300;
     const svgWidth = leftPadding + (maxDays * dayWidth);
     const svgHeight = headerHeight + (tasks.length * rowHeight) + 30;
 
     let svgHTML = `<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">`;
     
-    // Definiciones (Patrón rayado para margen)
     svgHTML += `
     <defs>
         <marker id="arrow" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
             <path d="M0,0 L6,3 L0,6" fill="#94a3b8" /> 
         </marker>
-        <pattern id="diagonalHatch" width="4" height="4" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-            <line x1="0" y1="0" x2="0" y2="4" style="stroke:#cbd5e1; stroke-width:1" />
-        </pattern>
     </defs>
     <rect width="100%" height="100%" fill="white" />`;
     
-    // Grid de Días
     let currentMonth = -1;
     for (let d = 0; d < maxDays; d++) {
         const currentDate = getDateFromDayOffset(d);
@@ -293,16 +279,13 @@
     let textHTML = "";
     let linesHTML = "";
     let blockHTML = "";
-    
     let currentBlock = 0;
 
     tasks.forEach((task, index) => {
         const s = schedule[task.id];
         const xBase = leftPadding + (s.ES * dayWidth);
         
-        // --- LÓGICA DE MARGEN ---
-        // Dividimos la duración total: 80% Trabajo, 20% Margen
-        // Esto asegura que el total (Trabajo + Margen) respete el cronograma estricto.
+        // Lógica 80/20
         const totalWidth = task.duration * dayWidth;
         const workWidth = totalWidth * 0.8;
         const marginWidth = totalWidth * 0.2;
@@ -311,7 +294,6 @@
         const marginDays = (task.duration * 0.2).toFixed(1);
 
         if (task.block !== currentBlock) {
-            // Barra lateral de color de bloque
             const blockHeight = tasks.filter(t=>t.block===task.block).length * rowHeight;
             blockHTML += `<rect x="0" y="${currentY}" width="5" height="${blockHeight}" class="fill-b${task.block}" />`;
             currentBlock = task.block;
@@ -319,30 +301,28 @@
 
         svgHTML += `<line x1="0" y1="${currentY}" x2="${svgWidth}" y2="${currentY}" class="row-separator" />`;
         
-        textHTML += `<text x="15" y="${currentY + (rowHeight/2)}" class="task-text" style="font-weight: ${task.id.includes('MCR') ? 'bold' : 'normal'}">${task.id} ${task.name}</text>`;
+        textHTML += `<text x="15" y="${currentY + (rowHeight/2)}" class="task-text" style="font-weight: ${task.id === 'MCR' ? 'bold' : 'normal'}">${task.name}</text>`;
 
-        // Tooltips
         const startDate = getDateFromDayOffset(s.ES);
         const endDate = getDateFromDayOffset(s.EF);
-        const tipWork = `<strong>${task.name}</strong><br>Ejecución Estimada: ${workDays} días<br>Inicio: ${formatDate(startDate)}`;
-        const tipMargin = `<strong>Margen de Seguridad</strong><br>Reserva: ${marginDays} días<br>Fin Límite: ${formatDate(endDate)}`;
+        const tipWork = `<strong>${task.name}</strong><br>Trabajo Neto: ${workDays} días<br>Inicio: ${formatDate(startDate)}`;
+        const tipMargin = `<strong>Margen de Riesgo</strong><br>Reserva: ${marginDays} días<br>Entrega Límite: ${formatDate(endDate)}`;
 
-        // 1. Barra de Trabajo
+        // 1. Barra de Trabajo (Sólida)
         taskBarsHTML += `<rect x="${xBase}" y="${currentY + 10}" width="${workWidth}" height="${rowHeight - 20}" 
             class="task-bar fill-b${task.block} ${s.isCritical ? 'critical-task' : ''}" 
             onmouseover="showTooltip(evt, '${tipWork}')" onmouseout="hideTooltip()" />`;
 
-        // 2. Barra de Margen (pegada a la derecha)
+        // 2. Barra de Margen (Sólida translúcida del mismo color)
+        // Se aplica la clase 'fill-bX' para el color base y 'task-margin' para la opacidad
         taskBarsHTML += `<rect x="${xBase + workWidth}" y="${currentY + 10}" width="${marginWidth}" height="${rowHeight - 20}" 
-            class="task-margin stroke-b${task.block}" 
+            class="task-margin fill-b${task.block} stroke-b${task.block}" 
             onmouseover="showTooltip(evt, '${tipMargin}')" onmouseout="hideTooltip()" />`;
 
-        // Dependencias
         task.dep.forEach(depId => {
             const depIndex = tasks.findIndex(t => t.id === depId);
             if (depIndex !== -1) {
                 const depS = schedule[depId];
-                // La flecha sale del final del margen de la tarea previa
                 const startX = leftPadding + (depS.EF * dayWidth); 
                 const startY = currentY - (index - depIndex) * rowHeight + (rowHeight/2);
                 const endX = xBase; 
@@ -363,17 +343,15 @@
 
     svgHTML += `<line x1="0" y1="${currentY}" x2="${svgWidth}" y2="${currentY}" class="row-separator" />`;
     
-    // Ensamblaje final (Orden de capas importa)
     svgHTML += blockHTML + linesHTML + taskBarsHTML + textHTML + `</svg>`;
     document.getElementById('chart-container').innerHTML = svgHTML;
 
-    // Tooltip Logic
     const tooltip = document.getElementById('tooltip');
     window.showTooltip = (evt, text) => {
         tooltip.innerHTML = text;
         tooltip.style.opacity = 1;
         let left = evt.pageX + 15;
-        if (left + 250 > window.innerWidth) left = evt.pageX - 260;
+        if (left + 300 > window.innerWidth) left = evt.pageX - 310;
         tooltip.style.left = left + 'px';
         tooltip.style.top = (evt.pageY + 10) + 'px';
     };
